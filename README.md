@@ -17,5 +17,3 @@ We suggest that you begin by typing:
 
   cd app-markdown
   npm start
-
-Happy hacking!
