@@ -62,61 +62,68 @@ function FileActions({ markdown, onFileImport }) {
   };
 
   return (
-    <div style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
-      <div
-        onClick={handleClick}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        style={{
-          padding: '10px 20px',
-          border: '2px dashed #ccc',
-          borderRadius: '4px',
-          backgroundColor: isDragging ? '#f0f0f0' : '#fff',
-          textAlign: 'center',
-          cursor: 'pointer',
-          marginRight: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {isDragging ? 'Déposez le fichier ici' : 'Choisir ou glisser un fichier'}
-        <input
-          type="file"
-          accept=".md"
-          onChange={handleFileImport}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-        />
-      </div>
-      <button onClick={openModal} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-        Exporter le fichier
-      </button>
-
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Nommer et exporter le fichier"
-        ariaHideApp={false}
-      >
-        <h2>Exporter le fichier</h2>
-        <input
-          type="text"
-          value={fileName}
-          onChange={(e) => setFileName(e.target.value)}
-          placeholder="Nom du fichier"
-          style={{ padding: '5px', width: '100%' }}
-        />
-        <div style={{ marginTop: '10px' }}>
-          <button onClick={handleFileExport} style={{ marginRight: '10px' }}>
-            Exporter
-          </button>
-          <button onClick={closeModal}>
-            Annuler
-          </button>
+    <div style={{ width: '100%', borderTop: '1px solid #ccc', paddingTop: '10px' }}>
+      <div style={{ padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <div
+          onClick={handleClick}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          style={{
+            padding: '10px 20px',
+            border: '2px dashed #ccc',
+            borderRadius: '4px',
+            backgroundColor: isDragging ? '#f0f0f0' : '#007bff',
+            color: isDragging ? '#333' : '#fff',
+            textAlign: 'center',
+            cursor: 'pointer',
+            marginRight: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background-color 0.3s ease, color 0.3s ease',
+            width: '200px',
+            boxSizing: 'border-box',
+          }}
+        >
+          {isDragging ? 'Déposez ici' : 'Importer le fichier'}
+          <input
+            type="file"
+            accept=".md"
+            onChange={handleFileImport}
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+          />
         </div>
-      </Modal>
+        <button onClick={openModal} style={{ padding: '10px 20px', cursor: 'pointer', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', width: '200px', boxSizing: 'border-box' }}>
+          Exporter le fichier
+        </button>
+
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel="Nommer et exporter le fichier"
+          ariaHideApp={false}
+          className="modal-content"
+          overlayClassName="modal-overlay"
+        >
+          <h2>Exporter le fichier</h2>
+          <input
+            type="text"
+            value={fileName}
+            onChange={(e) => setFileName(e.target.value)}
+            placeholder="Nom du fichier"
+          />
+          <div style={{ marginTop: '10px' }}>
+            <button onClick={handleFileExport} style={{ marginBottom: '10px' }}>
+              Exporter
+            </button>
+            <button onClick={closeModal}>
+              Annuler
+            </button>
+          </div>
+        </Modal>
+      </div>
     </div>
   );
 }
