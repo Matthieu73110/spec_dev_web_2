@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setItem, removeItem, resetStorage } from '../store/features/images'; // Adapte le chemin selon ton fichier
+import { setItem, removeItem, resetStorage } from '../store/features/localstorage'; // Adapte le chemin selon ton fichier
 
 const StorageManager = () => {
   const dispatch = useDispatch();
