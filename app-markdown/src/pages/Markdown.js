@@ -1,20 +1,29 @@
 // Markdown.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import Editor from '../components/Editor';
 import Preview from '../components/Preview';
-import FileActions from '../components/FileActions';
+import FileActions from '../components/MarkdownFileActions';
 import FileTree from '../components/FileTree';
 import ContextMenu from '../components/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { renommerFichier, supprimerFichier, ajouterFichier } from '../store/features/localstorage';
 
-function Markdown() {
-    const [markdown, setMarkdown] = useState("# Hello World!");
+function Markdown({ markdown, setMarkdown, blocks }) {
     const [files, setFiles] = useState([]);
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [selectedNode, setSelectedNode] = useState(null);
     const dispatch = useDispatch();
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            if (markdown === '') {
+                setMarkdown("# Hello World!");
+            }
+        }
+    }, [markdown, setMarkdown]);
 
     const handleMarkdownChange = (value) => {
         setMarkdown(value);
@@ -26,20 +35,17 @@ function Markdown() {
 
     const handleNewItem = (type, name) => {
         const newItem = { id: Date.now(), name, type, children: [] };
+
         if (selectedNode) {
-            // Ajouter le fichier ou le dossier dans le dossier sélectionné
             if (!Array.isArray(selectedNode.children)) {
                 selectedNode.children = [];
             }
             selectedNode.children.push(newItem);
-            // Mettre à jour l'état des fichiers
-            setFiles([...files]);
-            // Mettre à jour le store
-            dispatch(ajouterFichier(newItem, selectedNode.id));
+            setFiles([...files]); // Mettre à jour l'état des fichiers
+            dispatch(ajouterFichier(newItem, selectedNode.id)); // Mettre à jour le store
         } else {
-            // Ajouter à la racine
             setFiles([...files, newItem]);
-            dispatch(ajouterFichier(newItem));
+            dispatch(ajouterFichier(newItem)); // Ajouter à la racine
         }
         setContextMenuPosition(null);
     };
@@ -47,6 +53,7 @@ function Markdown() {
     const handleRename = (newName) => {
         if (selectedNode) {
             dispatch(renommerFichier({ id: selectedNode.id, newName }));
+            setFiles(files.map(file => file.id === selectedNode.id ? { ...file, name: newName } : file));
         }
         setContextMenuPosition(null);
     };
@@ -54,7 +61,13 @@ function Markdown() {
     const handleDelete = () => {
         if (selectedNode) {
             dispatch(supprimerFichier(selectedNode.id));
-            setFiles(files.filter(file => file.id !== selectedNode.id));
+            const removeFile = (id, items) => items.filter(item => {
+                if (item.id === id) return false;
+                if (item.children) item.children = removeFile(id, item.children);
+                return true;
+            });
+
+            setFiles(removeFile(selectedNode.id, files));
             setSelectedNode(null);
         }
         setContextMenuPosition(null);
@@ -73,13 +86,11 @@ function Markdown() {
                 </Helmet>
 
                 <div style={{ display: 'flex', flex: 1 }}>
-                    {/* Section de l'arborescence des fichiers */}
                     <div style={{ width: '250px', borderRight: '1px solid #ccc', padding: '10px' }}>
                         <h3>Fichiers</h3>
                         <FileTree files={files} onContextMenu={handleContextMenu} />
                     </div>
 
-                    {/* Affiche le menu contextuel */}
                     {contextMenuPosition && (
                         <ContextMenu
                             onNewItem={handleNewItem}
@@ -89,22 +100,20 @@ function Markdown() {
                                 top: contextMenuPosition.y,
                                 left: contextMenuPosition.x,
                             }}
+                            isFolder={selectedNode && selectedNode.type === 'folder'}
+                            isRoot={!selectedNode || selectedNode.id === 'root'}
                         />
                     )}
 
-                    {/* Section principale */}
                     <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column' }}>
                         <h3>Bienvenue dans l'éditeur Markdown</h3>
-
-                        {/* Contenu de l'éditeur et de l'aperçu */}
                         <div style={{ display: 'flex', flex: 1 }}>
-                            <Editor markdown={markdown} onMarkdownChange={handleMarkdownChange} />
+                            <Editor markdown={markdown} onMarkdownChange={handleMarkdownChange} blocks={blocks} />
                             <Preview markdown={markdown} />
                         </div>
                     </div>
                 </div>
 
-                {/* Actions liées aux fichiers */}
                 <FileActions markdown={markdown} onFileImport={handleFileImport} />
             </div>
         </HelmetProvider>
