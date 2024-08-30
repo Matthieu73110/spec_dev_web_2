@@ -1,4 +1,3 @@
-// Markdown.js
 import React, { useState, useEffect, useRef } from 'react';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import Editor from '../components/Editor';
@@ -37,6 +36,12 @@ function Markdown({ markdown, setMarkdown, blocks }) {
         const newItem = { id: Date.now(), name, type, children: [] };
 
         if (selectedNode) {
+            if (selectedNode.type === 'file') {
+                // Ne pas permettre d'ajouter un fichier dans un fichier
+                alert('Vous ne pouvez pas ajouter un fichier dans un autre fichier.');
+                return;
+            }
+
             if (!Array.isArray(selectedNode.children)) {
                 selectedNode.children = [];
             }
@@ -44,8 +49,11 @@ function Markdown({ markdown, setMarkdown, blocks }) {
             setFiles([...files]); // Mettre à jour l'état des fichiers
             dispatch(ajouterFichier(newItem, selectedNode.id)); // Mettre à jour le store
         } else {
-            setFiles([...files, newItem]);
-            dispatch(ajouterFichier(newItem)); // Ajouter à la racine
+            if (type === 'file' && !selectedNode) {
+                // Ajouter à la racine
+                setFiles([...files, newItem]);
+                dispatch(ajouterFichier(newItem)); // Ajouter à la racine
+            }
         }
         setContextMenuPosition(null);
     };
@@ -87,7 +95,7 @@ function Markdown({ markdown, setMarkdown, blocks }) {
 
                 <div style={{ display: 'flex', flex: 1 }}>
                     <div style={{ width: '250px', borderRight: '1px solid #ccc', padding: '10px' }}>
-                        <h3>Fichiers</h3>
+                        <h3>Fichiers :</h3>
                         <FileTree files={files} onContextMenu={handleContextMenu} />
                     </div>
 

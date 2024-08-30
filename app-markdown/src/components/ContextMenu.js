@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ContextMenu = ({ onNewItem, onRename, onDelete, style }) => {
+const ContextMenu = ({ onNewItem, onRename, onDelete, style, isFolder, isRoot }) => {
     const handleNewFile = () => {
         const fileName = prompt("Nom du nouveau fichier:");
         if (fileName) {
@@ -41,12 +41,16 @@ const ContextMenu = ({ onNewItem, onRename, onDelete, style }) => {
                 ...style,
             }}
         >
-            <div onClick={handleNewFile}>
-                Nouveau fichier
-            </div>
-            <div onClick={handleNewFolder}>
-                Nouveau dossier
-            </div>
+            {isFolder || isRoot ? (
+                <div onClick={handleNewFile}>
+                    Nouveau fichier
+                </div>
+            ) : null}
+            {isFolder || isRoot ? (
+                <div onClick={handleNewFolder}>
+                    Nouveau dossier
+                </div>
+            ) : null}
             <div onClick={handleRename}>
                 Renommer
             </div>

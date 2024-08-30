@@ -4,7 +4,7 @@ import { Treebeard } from 'react-treebeard';
 const FileTree = ({ files, onContextMenu }) => {
     const [data, setData] = useState({
         id: 'root',
-        name: 'root',
+        name: 'Fichiers',
         toggled: true,
         children: [],
     });
@@ -12,7 +12,7 @@ const FileTree = ({ files, onContextMenu }) => {
     useEffect(() => {
         setData({
             id: 'root',
-            name: 'root',
+            name: 'Fichiers',
             toggled: true,
             children: files,
         });
@@ -47,7 +47,7 @@ const FileTree = ({ files, onContextMenu }) => {
         ),
         Header: (props) => (
             <div>
-                {props.node.type === 'folder' ? '📁' : '📄'} {/* Ajouter des icônes */}
+                {props.node.type === 'file' ? '📄' : '📁'} {/* Ajouter des icônes */}
                 {props.node.name}
             </div>
         ),
