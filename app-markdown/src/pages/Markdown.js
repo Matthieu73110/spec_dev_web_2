@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Editor from '../components/Editor';
 import Preview from '../components/Preview';
 import FileActions from '../components/FileActions';
 
 function Markdown({ markdown, setMarkdown, blocks }) {
 
-  // const [markdown, setMarkdown] = useState('Hello World!');
+  useEffect(() => {
+    if (!markdown) {
+      setMarkdown("# Hello World!");
+    }
+  }, [markdown, setMarkdown]);
 
   const handleMarkdownChange = (value) => {
     setMarkdown(value);
