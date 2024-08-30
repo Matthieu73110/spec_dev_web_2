@@ -62,68 +62,65 @@ function FileActions({ markdown, onFileImport }) {
   };
 
   return (
-    <div style={{ width: '100%', borderTop: '1px solid #ccc', paddingTop: '10px' }}>
-      <div style={{ padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <div
-          onClick={handleClick}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          style={{
-            padding: '10px 20px',
-            border: '2px dashed #ccc',
-            borderRadius: '4px',
-            backgroundColor: isDragging ? '#f0f0f0' : '#007bff',
-            color: isDragging ? '#333' : '#fff',
-            textAlign: 'center',
-            cursor: 'pointer',
-            marginRight: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'background-color 0.3s ease, color 0.3s ease',
-            width: '200px',
-            boxSizing: 'border-box',
-          }}
-        >
-          {isDragging ? 'Déposez ici' : 'Importer le fichier'}
-          <input
-            type="file"
-            accept=".md"
-            onChange={handleFileImport}
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-          />
-        </div>
-        <button onClick={openModal} style={{ padding: '10px 20px', cursor: 'pointer', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', width: '200px', boxSizing: 'border-box' }}>
-          Exporter le fichier
-        </button>
+    <div className="d-flex align-items-center border-top pt-3">
+      <div
+        onClick={handleClick}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`btn ${isDragging ? 'btn-secondary' : 'btn-primary'} me-3`}
+        style={{
+          width: '200px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+        }}
+      >
+        {isDragging ? 'Déposez ici' : 'Importer le fichier'}
+        <input
+          type="file"
+          accept=".md"
+          onChange={handleFileImport}
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+        />
+      </div>
+      <button onClick={openModal} className="btn btn-primary" style={{ width: '200px', height: '40px' }}>
+        Exporter le fichier
+      </button>
 
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          contentLabel="Nommer et exporter le fichier"
-          ariaHideApp={false}
-          className="modal-content"
-          overlayClassName="modal-overlay"
-        >
-          <h2>Exporter le fichier</h2>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Nommer et exporter le fichier"
+        ariaHideApp={false}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+      >
+        <div className="modal-header">
+          <h5 className="modal-title">Exporter le fichier</h5>
+          <button type="button" className="btn-close" aria-label="Close" onClick={closeModal}></button>
+        </div>
+        <div className="modal-body">
           <input
             type="text"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
             placeholder="Nom du fichier"
+            className="form-control"
           />
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={handleFileExport} style={{ marginBottom: '10px' }}>
-              Exporter
-            </button>
-            <button onClick={closeModal}>
-              Annuler
-            </button>
-          </div>
-        </Modal>
-      </div>
+        </div>
+        <div className="modal-footer">
+          <button onClick={handleFileExport} className="btn btn-primary">
+            Exporter
+          </button>
+          <button onClick={closeModal} className="btn btn-secondary">
+            Annuler
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

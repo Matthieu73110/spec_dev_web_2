@@ -1,17 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 function Editor({ markdown, onMarkdownChange }) {
-  const [blocks, setBlocks] = useState([]);
+  const [pressedKeys, setPressedKeys] = useState([]);
+  const blocks = useSelector((state) => state.blocks);
+  const shortcuts = useSelector((state) => state.shortcuts);
 
   useEffect(() => {
-    // Charger les blocs depuis le localStorage
-    const storedBlocks = JSON.parse(localStorage.getItem('customBlocks')) || [];
-    setBlocks(storedBlocks);
-  }, []);
+    const handleKeyDown = (event) => {
+      const key = event.key;
+      setPressedKeys((prevKeys) => [...prevKeys, key]);
+    };
 
-  const handleInsertBlock = (blockContent) => {
-    onMarkdownChange(markdown + '\n' + blockContent);
-  };
+    const handleKeyUp = () => {
+      const keySequence = pressedKeys.join('+');
+      const shortcut = shortcuts.find((s) => s.keySequence === keySequence);
+
+      if (shortcut && shortcut.blockIndex !== null && blocks[shortcut.blockIndex]) {
+        onMarkdownChange(markdown + '\n' + blocks[shortcut.blockIndex].content);
+      }
+
+      // Réinitialisation des touches après vérification du raccourci
+      setPressedKeys([]);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [pressedKeys, shortcuts, blocks, markdown, onMarkdownChange]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -24,7 +44,7 @@ function Editor({ markdown, onMarkdownChange }) {
         {blocks.map((block, index) => (
           <button
             key={index}
-            onClick={() => handleInsertBlock(block.content)}
+            onClick={() => onMarkdownChange(markdown + '\n' + block.content)}
             style={{ marginRight: '10px', padding: '5px 10px' }}
           >
             {block.name}
