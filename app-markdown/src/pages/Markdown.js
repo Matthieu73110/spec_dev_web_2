@@ -1,13 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Editor from '../components/Editor';
 import Preview from '../components/Preview';
-import FileActions from '../components/FileActions';
+import FileActions from '../components/MarkdownFileActions';
 
 function Markdown({ markdown, setMarkdown, blocks }) {
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (!markdown) {
-      setMarkdown("# Hello World!");
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      if (markdown === '') {
+        setMarkdown("# Hello World!");
+      }
     }
   }, [markdown, setMarkdown]);
 

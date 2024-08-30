@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { addShortcut } from '../store/features/shortcutsSlice';
 
@@ -50,7 +50,6 @@ function AddShortcutModal({ isOpen, onRequestClose }) {
   const handleAddShortcut = () => {
     if (keySequence.trim()) {
       const parsedBlockIndex = blockIndex !== '' ? parseInt(blockIndex, 10) : null;
-      console.log("Raccourci ajouté :", { keySequence, blockIndex: parsedBlockIndex });
       dispatch(addShortcut({ keySequence, blockIndex: parsedBlockIndex }));
       setKeySequence('');
       setBlockIndex('');
@@ -59,59 +58,48 @@ function AddShortcutModal({ isOpen, onRequestClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onRequestClose={() => { stopRecording(); onRequestClose(); }} contentLabel="Ajouter un raccourci" ariaHideApp={false}>
-      <div className="position-relative">
-        <button
-          type="button"
-          className="btn btn-danger position-absolute top-0 end-0 m-2"
-          onClick={() => { stopRecording(); onRequestClose(); }}
-          aria-label="Close"
-        >
-          &times;
-        </button>
-        <div className="modal-header">
-          <h5 className="modal-title">Ajouter un raccourci</h5>
-        </div>
-        <div className="modal-body">
-          <div className="mb-3">
-            <div className="d-flex">
-              <input
-                type="text"
-                placeholder="Appuyez sur 'Record' pour commencer"
-                value={keySequence}
-                readOnly
-                className="form-control me-2"
-              />
-              <button
-                onClick={isRecording ? stopRecording : startRecording}
-                className={`btn ${isRecording ? 'btn-danger' : 'btn-primary'}`}
-              >
-                {isRecording ? 'Stop' : 'Record'}
-              </button>
-            </div>
+    <Modal show={isOpen} onHide={() => { stopRecording(); onRequestClose(); }} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Ajouter un raccourci</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Group controlId="keySequence" className="mb-3">
+          <Form.Label>Séquence de touches</Form.Label>
+          <div className="d-flex">
+            <Form.Control
+              type="text"
+              placeholder="Appuyez sur 'Record' pour commencer"
+              value={keySequence}
+              readOnly
+              className="me-2"
+            />
+            <Button variant={isRecording ? 'danger' : 'primary'} onClick={isRecording ? stopRecording : startRecording}>
+              {isRecording ? 'Stop' : 'Record'}
+            </Button>
           </div>
-          <div className="mb-3">
-            <select
-              value={blockIndex}
-              onChange={(e) => setBlockIndex(e.target.value)}
-              className="form-select"
-            >
-              <option value="">Sélectionnez un bloc</option>
-              {blocks.map((block, index) => (
-                <option key={index} value={index}>{block.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="modal-footer">
-          <button onClick={handleAddShortcut} className="btn btn-primary">
-            Ajouter le raccourci
-          </button>
-          <button onClick={() => { stopRecording(); onRequestClose(); }} className="btn btn-secondary">
-            Annuler
-          </button>
-        </div>
-      </div>
+        </Form.Group>
+        <Form.Group controlId="blockSelect" className="mb-3">
+          <Form.Label>Bloc assigné</Form.Label>
+          <Form.Control
+            as="select"
+            value={blockIndex}
+            onChange={(e) => setBlockIndex(e.target.value)}
+          >
+            <option value="">Sélectionnez un bloc</option>
+            {blocks.map((block, index) => (
+              <option key={index} value={index}>{block.name}</option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => { stopRecording(); onRequestClose(); }}>
+          Annuler
+        </Button>
+        <Button variant="primary" onClick={handleAddShortcut}>
+          Ajouter le raccourci
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 }

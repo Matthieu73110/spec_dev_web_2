@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import './App.css';
 import Markdown from './pages/Markdown';
 import CompanyComponent from './pages/test';
@@ -10,14 +11,13 @@ import AddShortcut from './components/AddShortcutModal';
 import ImageImportModal from './components/ImageImportModal';
 import ViewImagesModal from './components/ViewImagesModal';
 import { ExportImagesModal, ImportImagesModal } from './components/ImagesExportImportModals';
+import MarkdownFileActions from './components/MarkdownFileActions'; // Import du nouveau composant
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 function App() {
-  const [markdown, setMarkdown] = useState('');  // Initialiser l'état du markdown
+  const [markdown, setMarkdown] = useState('');
   const [blocks, setBlocks] = useState(JSON.parse(localStorage.getItem('customBlocks')) || []);
   const [shortcuts, setShortcuts] = useState(JSON.parse(localStorage.getItem('shortcuts')) || []);
-
   const [modalState, setModalState] = useState({
     showImportModal: false,
     showExportModal: false,
@@ -50,12 +50,10 @@ function App() {
     setBlocks(updatedBlocks);
     localStorage.setItem('customBlocks', JSON.stringify(updatedBlocks));
 
-    // Débind le bloc des raccourcis
     const updatedShortcuts = shortcuts.map(shortcut => {
       if (shortcut.blockIndex === index) {
         return { ...shortcut, blockIndex: null };
       } else if (shortcut.blockIndex > index) {
-        // Ajuste l'index si un bloc avant a été supprimé
         return { ...shortcut, blockIndex: shortcut.blockIndex - 1 };
       }
       return shortcut;
@@ -86,67 +84,41 @@ function App() {
     const markdownImageSyntax = `![${imageName}](#${imageName})`;
     setMarkdown((prev) => `${prev}\n${markdownImageSyntax}`);
   };
-  
-
-
-  
 
   return (
     <BrowserRouter>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+        <Navbar bg="primary" variant="dark" expand="lg">
           <div className="container-fluid">
-            <Link className="navbar-brand" to="/markdown">Markdown App</Link>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarNavDropdown">
-              <ul className="navbar-nav">
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="fileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Fichier
-                  </a>
-                  <ul className="dropdown-menu" aria-labelledby="fileDropdown">
-                    <li><button className="dropdown-item" onClick={() => openModal('showImportModal')}>Importer</button></li>
-                    <li><button className="dropdown-item" onClick={() => openModal('showExportModal')}>Exporter</button></li>
-                  </ul>
-                </li>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="blocksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Blocks personnalisés
-                  </a>
-                  <ul className="dropdown-menu" aria-labelledby="blocksDropdown">
-                    <li><button className="dropdown-item" onClick={() => openModal('showViewBlocksModal')}>Voir les blocs personnalisés</button></li>
-                    <li><button className="dropdown-item" onClick={() => openModal('showAddBlockModal')}>Ajouter un bloc personnalisé</button></li>
-                  </ul>
-                </li>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="shortcutsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Raccourcis
-                  </a>
-                  <ul className="dropdown-menu" aria-labelledby="shortcutsDropdown">
-                    <li><button className="dropdown-item" onClick={() => openModal('showViewShortcutsModal')}>Voir les raccourcis</button></li>
-                    <li><button className="dropdown-item" onClick={() => openModal('showAddShortcutModal')}>Ajouter un raccourci</button></li>
-                  </ul>
-                </li>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="imagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Images
-                  </a>
-                  <ul className="dropdown-menu" aria-labelledby="imagesDropdown">
-                    <li><button className="dropdown-item" onClick={() => openModal('showImageImportModal')}>Importer <i className="bi bi-upload"></i></button></li>
-                    <li><button className="dropdown-item" onClick={() => openModal('showViewImagesModal')}>Voir les images</button></li>
-                    <li><button className="dropdown-item" onClick={() => openModal('showExportImageModal')}>Exporter en .img.mdlc</button></li>
-                    <li><button className="dropdown-item" onClick={() => openModal('showImportImageModal')}>Importer en .img.mdlc</button></li>
-                  </ul>
-                </li>
-              </ul>
-            </div>
+            <Navbar.Brand as={Link} to="/markdown">Markdown App</Navbar.Brand>
+            <Navbar.Toggle aria-controls="navbar-nav" />
+            <Navbar.Collapse id="navbar-nav">
+              <Nav className="me-auto">
+                <NavDropdown title="Fichier" id="fileDropdown">
+                  <NavDropdown.Item onClick={() => openModal('showImportModal')}>Importer fichier .md</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showExportModal')}>Exporter fichier .md</NavDropdown.Item>
+                </NavDropdown>
+                <NavDropdown title="Blocks personnalisés" id="blocksDropdown">
+                  <NavDropdown.Item onClick={() => openModal('showViewBlocksModal')}>Voir les blocs personnalisés</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showAddBlockModal')}>Ajouter un bloc personnalisé</NavDropdown.Item>
+                </NavDropdown>
+                <NavDropdown title="Raccourcis" id="shortcutsDropdown">
+                  <NavDropdown.Item onClick={() => openModal('showViewShortcutsModal')}>Voir les raccourcis</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showAddShortcutModal')}>Ajouter un raccourci</NavDropdown.Item>
+                </NavDropdown>
+                <NavDropdown title="Images" id="imagesDropdown">
+                  <NavDropdown.Item onClick={() => openModal('showImageImportModal')}>Importer image</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showViewImagesModal')}>Voir les images</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showExportImageModal')}>Exporter en .img.mdlc</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showImportImageModal')}>Importer en .img.mdlc</NavDropdown.Item>
+                </NavDropdown>
+              </Nav>
+            </Navbar.Collapse>
           </div>
-        </nav>
+        </Navbar>
 
         <Routes>
-          <Route path='/markdown' element={<Markdown markdown={markdown} setMarkdown={setMarkdown} blocks={blocks} shortcuts={shortcuts} />}/>
+          <Route path='/markdown' element={<Markdown markdown={markdown} setMarkdown={setMarkdown} blocks={blocks} shortcuts={shortcuts} />} />
           <Route path='/test' element={<CompanyComponent />} />
         </Routes>
 
@@ -163,6 +135,17 @@ function App() {
         />
         <ExportImagesModal isOpen={modalState.showExportImageModal} onRequestClose={() => closeModal('showExportImageModal')} />
         <ImportImagesModal isOpen={modalState.showImportImageModal} onRequestClose={() => closeModal('showImportImageModal')} />
+
+        {/* Modal for Markdown file actions */}
+        <MarkdownFileActions
+          isOpen={modalState.showImportModal || modalState.showExportModal}
+          onRequestClose={() => closeModal(modalState.showImportModal ? 'showImportModal' : 'showExportModal')}
+          action={{
+            type: modalState.showImportModal ? 'import' : 'export',
+            markdown: markdown,
+          }}
+          onImport={(content) => setMarkdown(content)}
+        />
       </div>
     </BrowserRouter>
   );

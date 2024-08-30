@@ -1,6 +1,5 @@
 import React from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeImage, renameImage } from '../store/features/imagesSlice';
 
@@ -32,11 +31,11 @@ function ViewImagesModal({ isOpen, onRequestClose, onInsertImage }) {
                 className="p-2 text-center"
                 style={{ width: '100px' }}
               >
-                <input
+                <Form.Control
                   type="text"
                   defaultValue={image.name}
                   onBlur={(e) => handleRenameImage(index, e.target.value)}
-                  className="form-control mb-2"
+                  className="mb-2"
                 />
                 <img
                   src={image.base64}

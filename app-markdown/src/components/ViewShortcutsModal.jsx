@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from 'react-modal';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateShortcut, removeShortcut } from '../store/features/shortcutsSlice';
 
@@ -18,52 +18,44 @@ function ViewShortcutsModal({ isOpen, onRequestClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Voir les raccourcis" ariaHideApp={false}>
-      <div className="position-relative">
-        <button
-          type="button"
-          className="btn btn-danger position-absolute top-0 end-0 m-2"
-          onClick={onRequestClose}
-          aria-label="Close"
-        >
-          &times;
-        </button>
-        <div className="modal-header">
-          <h5 className="modal-title">Raccourcis</h5>
-        </div>
-        <div className="modal-body">
-          {shortcuts.length === 0 ? (
-            <p>Aucun raccourci n'a été créé.</p>
-          ) : (
-            <ul className="list-group">
-              {shortcuts.map((shortcut, index) => (
-                <li key={index} className="list-group-item">
-                  <strong>{shortcut.keySequence}</strong>
-                  <select
-                    id={`shortcut-select-${index}`}
-                    value={shortcut.blockIndex !== null ? shortcut.blockIndex : ''}
-                    onChange={(e) => handleShortcutChange(index, e)}
-                    className="form-select mt-2"
-                  >
-                    <option value="">Aucun bloc assigné</option>
-                    {blocks.map((block, i) => (
-                      <option key={i} value={i}>
-                        {block.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    onClick={() => handleRemoveShortcut(index)}
-                    className="btn btn-danger btn-sm mt-2"
-                  >
-                    Supprimer
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
+    <Modal show={isOpen} onHide={onRequestClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Raccourcis</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {shortcuts.length === 0 ? (
+          <p>Aucun raccourci n'a été créé.</p>
+        ) : (
+          <ul className="list-group">
+            {shortcuts.map((shortcut, index) => (
+              <li key={index} className="list-group-item">
+                <strong>{shortcut.keySequence}</strong>
+                <Form.Control
+                  as="select"
+                  value={shortcut.blockIndex !== null ? shortcut.blockIndex : ''}
+                  onChange={(e) => handleShortcutChange(index, e)}
+                  className="mt-2"
+                >
+                  <option value="">Aucun bloc assigné</option>
+                  {blocks.map((block, i) => (
+                    <option key={i} value={i}>
+                      {block.name}
+                    </option>
+                  ))}
+                </Form.Control>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleRemoveShortcut(index)}
+                  className="mt-2"
+                >
+                  Supprimer
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Modal.Body>
     </Modal>
   );
 }

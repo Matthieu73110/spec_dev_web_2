@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { addImage } from '../store/features/imagesSlice';
 
@@ -19,11 +18,6 @@ function ImageImportModal({ isOpen, onRequestClose }) {
   };
 
   const handleAddImage = () => {
-    if (typeof imageName !== 'string') {
-      console.error("imageName is not a string:", imageName);
-      return;
-    }
-  
     if (imageName.trim() && imageBase64) {
       const sanitizedImageName = imageName.replace(/\s+/g, '-').toLowerCase();
       dispatch(addImage({ name: sanitizedImageName, base64: imageBase64 }));
@@ -32,26 +26,19 @@ function ImageImportModal({ isOpen, onRequestClose }) {
       onRequestClose();
     }
   };
-  
 
   return (
-    <Modal
-      show={isOpen}
-      onHide={onRequestClose}
-      centered
-      size="sm"
-      style={{ maxWidth: '30%', width: '30%' }}
-    >
+    <Modal show={isOpen} onHide={onRequestClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Importer une image</Modal.Title>
       </Modal.Header>
       <Modal.Body className="text-center">
-        <input
+        <Form.Control
           type="text"
           placeholder="Nom de l'image"
           value={imageName}
           onChange={(e) => setImageName(e.target.value)}
-          className="form-control mb-3"
+          className="mb-3"
         />
         <div
           onClick={() => document.getElementById('imageInput').click()}
