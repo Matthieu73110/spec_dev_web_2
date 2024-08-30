@@ -7,10 +7,14 @@ import ViewBlocks from './components/ViewBlocksModal';
 import AddBlock from './components/AddBlockModal';
 import ViewShortcuts from './components/ViewShortcutsModal';
 import AddShortcut from './components/AddShortcutModal';
+import ImageImportModal from './components/ImageImportModal';
+import ViewImagesModal from './components/ViewImagesModal';
+import { ExportImagesModal, ImportImagesModal } from './components/ImagesExportImportModals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 function App() {
+  const [markdown, setMarkdown] = useState('');  // Initialiser l'état du markdown
   const [blocks, setBlocks] = useState(JSON.parse(localStorage.getItem('customBlocks')) || []);
   const [shortcuts, setShortcuts] = useState(JSON.parse(localStorage.getItem('shortcuts')) || []);
 
@@ -21,6 +25,10 @@ function App() {
     showAddBlockModal: false,
     showViewShortcutsModal: false,
     showAddShortcutModal: false,
+    showImageImportModal: false,
+    showViewImagesModal: false,
+    showExportImageModal: false,
+    showImportImageModal: false,
   });
 
   const openModal = (modalName) => {
@@ -74,6 +82,14 @@ function App() {
     localStorage.setItem('shortcuts', JSON.stringify(updatedShortcuts));
   };
 
+  const handleInsertImage = (imageName) => {
+    const markdownImageSyntax = `![${imageName}](#${imageName})`;
+    setMarkdown((prev) => `${prev}\n${markdownImageSyntax}`);
+  };
+
+
+  
+
   return (
     <BrowserRouter>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -112,13 +128,24 @@ function App() {
                     <li><button className="dropdown-item" onClick={() => openModal('showAddShortcutModal')}>Ajouter un raccourci</button></li>
                   </ul>
                 </li>
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle" href="#" id="imagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Images
+                  </a>
+                  <ul className="dropdown-menu" aria-labelledby="imagesDropdown">
+                    <li><button className="dropdown-item" onClick={() => openModal('showImageImportModal')}>Importer <i className="bi bi-upload"></i></button></li>
+                    <li><button className="dropdown-item" onClick={() => openModal('showViewImagesModal')}>Voir les images</button></li>
+                    <li><button className="dropdown-item" onClick={() => openModal('showExportImageModal')}>Exporter en .img.mdlc</button></li>
+                    <li><button className="dropdown-item" onClick={() => openModal('showImportImageModal')}>Importer en .img.mdlc</button></li>
+                  </ul>
+                </li>
               </ul>
             </div>
           </div>
         </nav>
 
         <Routes>
-          <Route path='/markdown' element={<Markdown blocks={blocks} shortcuts={shortcuts} />} />
+          <Route path='/markdown' element={<Markdown markdown={markdown} setMarkdown={setMarkdown} blocks={blocks} shortcuts={shortcuts} />}/>
           <Route path='/test' element={<CompanyComponent />} />
         </Routes>
 
@@ -127,6 +154,14 @@ function App() {
         <AddBlock addBlock={addBlock} isOpen={modalState.showAddBlockModal} onRequestClose={() => closeModal('showAddBlockModal')} />
         <ViewShortcuts shortcuts={shortcuts} updateShortcut={updateShortcut} removeShortcut={removeShortcut} isOpen={modalState.showViewShortcutsModal} onRequestClose={() => closeModal('showViewShortcutsModal')} />
         <AddShortcut blocks={blocks} addShortcut={addShortcut} isOpen={modalState.showAddShortcutModal} onRequestClose={() => closeModal('showAddShortcutModal')} />
+        <ImageImportModal isOpen={modalState.showImageImportModal} onRequestClose={() => closeModal('showImageImportModal')} />
+        <ViewImagesModal
+          isOpen={modalState.showViewImagesModal}
+          onRequestClose={() => closeModal('showViewImagesModal')}
+          onInsertImage={handleInsertImage}  // Assurez-vous que cette prop est bien passée
+        />
+        <ExportImagesModal isOpen={modalState.showExportImageModal} onRequestClose={() => closeModal('showExportImageModal')} />
+        <ImportImagesModal isOpen={modalState.showImportImageModal} onRequestClose={() => closeModal('showImportImageModal')} />
       </div>
     </BrowserRouter>
   );

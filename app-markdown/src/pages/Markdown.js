@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Editor from '../components/Editor';
 import Preview from '../components/Preview';
 import FileActions from '../components/FileActions';
 
-function Markdown({ blocks }) {
-  const [markdown, setMarkdown] = useState("# Hello World!");
+function Markdown({ markdown, setMarkdown, blocks }) {
+
+  // const [markdown, setMarkdown] = useState('Hello World!');
 
   const handleMarkdownChange = (value) => {
     setMarkdown(value);
