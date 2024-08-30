@@ -11,7 +11,8 @@ import AddShortcut from './components/AddShortcutModal';
 import ImageImportModal from './components/ImageImportModal';
 import ViewImagesModal from './components/ViewImagesModal';
 import { ExportImagesModal, ImportImagesModal } from './components/ImagesExportImportModals';
-import MarkdownFileActions from './components/MarkdownFileActions'; // Import du nouveau composant
+import MarkdownFileActions from './components/MarkdownFileActions';
+import { ExportBlocksModal, ImportBlocksModal } from './components/BlocksExportImportModals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -29,6 +30,8 @@ function App() {
     showViewImagesModal: false,
     showExportImageModal: false,
     showImportImageModal: false,
+    showImportBlocksModal: false,
+    showExportBlocksModal: false,
   });
 
   const openModal = (modalName) => {
@@ -101,6 +104,8 @@ function App() {
                 <NavDropdown title="Blocks personnalisés" id="blocksDropdown">
                   <NavDropdown.Item onClick={() => openModal('showViewBlocksModal')}>Voir les blocs personnalisés</NavDropdown.Item>
                   <NavDropdown.Item onClick={() => openModal('showAddBlockModal')}>Ajouter un bloc personnalisé</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showImportBlocksModal')}>Importer des blocs personnalisés</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => openModal('showExportBlocksModal')}>Exporter des blocs personnalisés</NavDropdown.Item>
                 </NavDropdown>
                 <NavDropdown title="Raccourcis" id="shortcutsDropdown">
                   <NavDropdown.Item onClick={() => openModal('showViewShortcutsModal')}>Voir les raccourcis</NavDropdown.Item>
@@ -125,6 +130,8 @@ function App() {
         {/* Modales */}
         <ViewBlocks blocks={blocks} removeBlock={removeBlock} isOpen={modalState.showViewBlocksModal} onRequestClose={() => closeModal('showViewBlocksModal')} />
         <AddBlock addBlock={addBlock} isOpen={modalState.showAddBlockModal} onRequestClose={() => closeModal('showAddBlockModal')} />
+        <ImportBlocksModal isOpen={modalState.showImportBlocksModal} onRequestClose={() => closeModal('showImportBlocksModal')} />
+        <ExportBlocksModal isOpen={modalState.showExportBlocksModal} onRequestClose={() => closeModal('showExportBlocksModal')} />
         <ViewShortcuts shortcuts={shortcuts} updateShortcut={updateShortcut} removeShortcut={removeShortcut} isOpen={modalState.showViewShortcutsModal} onRequestClose={() => closeModal('showViewShortcutsModal')} />
         <AddShortcut blocks={blocks} addShortcut={addShortcut} isOpen={modalState.showAddShortcutModal} onRequestClose={() => closeModal('showAddShortcutModal')} />
         <ImageImportModal isOpen={modalState.showImageImportModal} onRequestClose={() => closeModal('showImageImportModal')} />
@@ -133,8 +140,8 @@ function App() {
           onRequestClose={() => closeModal('showViewImagesModal')}
           onInsertImage={handleInsertImage}  // Assurez-vous que cette prop est bien passée
         />
-        <ExportImagesModal isOpen={modalState.showExportImageModal} onRequestClose={() => closeModal('showExportImageModal')} />
-        <ImportImagesModal isOpen={modalState.showImportImageModal} onRequestClose={() => closeModal('showImportImageModal')} />
+        <ExportBlocksModal isOpen={modalState.showExportBlocksModal} onRequestClose={() => closeModal('showExportBlocksModal')} /> 
+        <ImportBlocksModal isOpen={modalState.showImportBlocksModal} onRequestClose={() => closeModal('showImportBlocksModal')} /> 
 
         {/* Modal for Markdown file actions */}
         <MarkdownFileActions
