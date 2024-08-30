@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Treebeard } from 'react-treebeard';
 
-const FileTree = ({ files, onNewFileOrFolder }) => {
+const FileTree = ({ files, onContextMenu }) => {
     const [data, setData] = useState({
-        name: 'markdownFiles',
+        id: 'root',
+        name: 'root',
         toggled: true,
-        children: files,
+        children: [],
     });
 
     useEffect(() => {
         setData({
-            name: 'markdownFiles',
+            id: 'root',
+            name: 'root',
             toggled: true,
             children: files,
         });
@@ -23,14 +25,41 @@ const FileTree = ({ files, onNewFileOrFolder }) => {
         setData({ ...data });
     };
 
-    const handleContextMenu = (event) => {
-        event.preventDefault();
-        onNewFileOrFolder(event.clientX, event.clientY);
+    const NodeWrapper = ({ node, children }) => {
+        const handleContextMenu = (event) => {
+            event.preventDefault();
+            onContextMenu(event.clientX, event.clientY, node);
+        };
+
+        return (
+            <div onContextMenu={handleContextMenu}>
+                {children}
+            </div>
+        );
+    };
+
+    const customDecorators = {
+        ...Treebeard.defaultProps.decorators,
+        Container: (props) => (
+            <NodeWrapper node={props.node}>
+                <Treebeard.defaultProps.decorators.Container {...props} />
+            </NodeWrapper>
+        ),
+        Header: (props) => (
+            <div>
+                {props.node.type === 'folder' ? '📁' : '📄'} {/* Ajouter des icônes */}
+                {props.node.name}
+            </div>
+        ),
     };
 
     return (
-        <div onContextMenu={handleContextMenu}>
-            <Treebeard data={data} onToggle={onToggle} />
+        <div>
+            <Treebeard
+                data={data}
+                onToggle={onToggle}
+                decorators={customDecorators}
+            />
         </div>
     );
 };
